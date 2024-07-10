@@ -1,4 +1,5 @@
-const HOST = 'http://localhost:3005'
+const HOST = 'http://nest-app:3005'
+// const HOST = 'http://localhost:3005'
 
 export const get = async (url: string) => {
   const res = await fetch(`${HOST}${url}`)

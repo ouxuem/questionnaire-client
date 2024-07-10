@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 export default async function Page({ params }: { params: { id: string } }) {
   const { code, data, msg = '' } = await getQuestionData(params.id)
-  const { id, isDeleted, isPublished, title, componentList = [], css, js } = data || {}
+  const { isDeleted, isPublished, title, componentList = [], css, js, id } = data || {}
 
   if (code !== 0) {
     return (
@@ -95,6 +95,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     <PageWrapper css={css} js={js}>
       <form id="surveyForm" method="post" action="/api/answer">
         <input type="hidden" name="questionId" value={id} />
+        <input type="hidden" name="fingerprint" />
         {components_list_element}
         <div className="text-center m-[16px]">
           <button className="rounded-[3px] px-[15px] py-[4px] border-solid border-[1px] border-[transparent] text-[#fff] bg-[#1677ff]" type="submit">

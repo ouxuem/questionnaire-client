@@ -1,8 +1,9 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Script from 'next/script'
 // import Head from 'next/head'
 import { Metadata } from 'next'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 type PageWrapperProps = {
   children: JSX.Element | JSX.Element[]
   css?: string
@@ -21,10 +22,24 @@ export const viewport = {
 }
 
 const PageWrapper: React.FC<PageWrapperProps> = ({ children, css, js }) => {
+  const [fingerprint, setFingerprint] = useState('')
+  useEffect(() => {
+    async function generateFingerprint() {
+      const fp = await FingerprintJS.load()
+      const result = await fp.get()
+      setFingerprint(result.visitorId)
+    }
+    generateFingerprint()
+  }, [])
   useEffect(() => {
     const handleSubmit = (event: any) => {
       event.preventDefault()
       const form = event.target
+
+      const fingerprintInput = form.querySelector('input[name="fingerprint"]')
+      if (fingerprintInput) {
+        fingerprintInput.value = fingerprint
+      }
       const requiredInputs = form.querySelectorAll('input[required], textarea[required]')
       let isValid = true
 
@@ -65,7 +80,7 @@ const PageWrapper: React.FC<PageWrapperProps> = ({ children, css, js }) => {
         form.removeEventListener('submit', handleSubmit)
       }
     }
-  }, []) // 空依赖数组意味着这个效果只在组件挂载时运行一次
+  }, [fingerprint])
 
   return (
     <>
