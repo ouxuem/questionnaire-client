@@ -34,6 +34,7 @@
 
 import { post_answer } from '@/services/answer'
 import { NextResponse, NextRequest } from 'next/server'
+import { headers } from 'next/headers'
 
 // 生成答案
 const generate_answer_info = (formData: FormData) => {
@@ -55,6 +56,11 @@ const generate_answer_info = (formData: FormData) => {
 }
 
 export async function POST(request: NextRequest) {
+  const headersList = headers()
+  const host = headersList.get('host')
+  const baseUrl = `http://${host}`
+  console.log(baseUrl);
+  
   try {
     // 解析表单数据
     const formData = await request.formData()
@@ -64,14 +70,13 @@ export async function POST(request: NextRequest) {
     const res_data = await post_answer(answer_info)
 
     if (res_data.code === 0) {
-      return NextResponse.redirect(new URL('/success', request.url))
+      return NextResponse.redirect(new URL('/success', baseUrl))
     } else if (res_data.code === 404) {
-      return NextResponse.redirect(new URL('/repeat', request.url))
+      return NextResponse.redirect(new URL('/repeat', baseUrl))
     } else {
-      return NextResponse.redirect(new URL('/fail', request.url))
+      return NextResponse.redirect(new URL('/fail', baseUrl))
     }
   } catch (error) {
-    console.error('Error processing form:', error)
-    return NextResponse.redirect(new URL('/fail', request.url))
+    return NextResponse.redirect(new URL('/fail', baseUrl))
   }
 }
